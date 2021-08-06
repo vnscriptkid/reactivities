@@ -4,9 +4,10 @@ import { Activity } from '../../../models/Activity';
 
 interface Props {
     activities: Activity[];
+    handleActivitySelected: (activity: Activity) => void;
 }
 
-function ActivityList({activities} : Props) {
+function ActivityList({activities, handleActivitySelected} : Props) {
     return (
         <Segment>
             <Item.Group divided>
@@ -19,7 +20,8 @@ function ActivityList({activities} : Props) {
                             <div>{activity.city}, {activity.venue}</div>
                         </Item.Description>
                         <Item.Extra>
-                            <Button floated='right' content='View' color='blue'/>
+                            <Button onClick={() => handleActivitySelected(activity)} 
+                                floated='right' content='View' color='blue'/>
                             <Label basic content={activity.category}/>
                         </Item.Extra>
                         <Divider />

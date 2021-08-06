@@ -7,16 +7,24 @@ import ActivityList from './ActivityList';
 
 interface Props {
     activities: Activity[];
+    selectedActivity: Activity | null;
+    handleActivitySelected: (activity: Activity) => void;
+    handleActivityCancelled: () => void;
 }
 
-export default function ActivityDashboard({activities} : Props) {
+export default function ActivityDashboard({activities, handleActivityCancelled, handleActivitySelected, selectedActivity} : Props) {
     return (
         <Grid>
             <Grid.Column width='10'>
-                <ActivityList activities={activities}/>
+                <ActivityList 
+                    activities={activities} 
+                    handleActivitySelected={handleActivitySelected}/>
             </Grid.Column>
             <Grid.Column width='6'>
-                {activities[0] && <ActivityDetails activity={activities[0]}/>}
+                {selectedActivity && <ActivityDetails 
+                    activity={selectedActivity}
+                    handleActivityCancelled={handleActivityCancelled}
+                />}
                 <ActivityForm />
             </Grid.Column>
         </Grid>

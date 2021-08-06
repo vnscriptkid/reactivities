@@ -4,9 +4,10 @@ import { Activity } from '../../../models/Activity';
 
 interface Props {
     activity: Activity;
+    handleActivityCancelled: () => void;
 }
 
-function ActivityDetails({ activity } : Props) {
+function ActivityDetails({ activity, handleActivityCancelled } : Props) {
     return (
         <Card fluid>
             <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
@@ -22,7 +23,7 @@ function ActivityDetails({ activity } : Props) {
             <Card.Content extra>
                 <ButtonGroup widths='2'>
                     <Button basic color='blue' content='Edit' />
-                    <Button basic color='grey' content='Cancel' />
+                    <Button onClick={handleActivityCancelled} basic color='grey' content='Cancel' />
                 </ButtonGroup>
             </Card.Content>
         </Card>
