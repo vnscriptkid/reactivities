@@ -445,3 +445,6 @@ $RECYCLE.BIN/
 appsettings.json
 .vscode
 requests
+
+## db files
+reactivities.db
