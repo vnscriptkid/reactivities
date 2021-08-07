@@ -60,7 +60,10 @@ function App() {
     setSelectedActivity(activity);
   }
 
-  function handleDeleteActivity (id: string) {
+  async function deleteActivity (id: string) {
+    setSumitting(true)
+    await agent.Activities.delete(id);
+    setSumitting(false)
     setActivities(activities.filter(a => a.id !== id));
   }
 
@@ -79,7 +82,7 @@ function App() {
           cancelEditMode={cancelEditMode}
           editMode={editMode}
           createOrUpdate={handleCreateOrUpdateActivity}
-          handleDeleteActivity={handleDeleteActivity}
+          deleteActivity={deleteActivity}
           submitting={submitting}
         />
       </Container>
