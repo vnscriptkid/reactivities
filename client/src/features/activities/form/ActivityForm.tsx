@@ -34,7 +34,7 @@ function ActivityForm({ cancelEditMode, selectedActivity, createOrUpdate } : Pro
                 <Form.Input value={activity.title} onChange={onChangeInput} name='title' placeholder='Title' />
                 <Form.TextArea value={activity.description} onChange={onChangeInput} name='description' placeholder='Description' />
                 <Form.Input value={activity.category} onChange={onChangeInput} name='category' placeholder='Category' />
-                <Form.Input value={activity.date} onChange={onChangeInput} name='date' placeholder='Date' />
+                <Form.Input type='date' value={activity.date} onChange={onChangeInput} name='date' placeholder='Date' />
                 <Form.Input value={activity.city} onChange={onChangeInput} name='city' placeholder='City' />
                 <Form.Input value={activity.venue} onChange={onChangeInput} name='venue' placeholder='Venue' />
                 <Button floated='right' positive type='submit' content='Submit' />

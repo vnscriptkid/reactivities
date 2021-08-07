@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Container } from 'semantic-ui-react';
 import { Activity } from '../models/Activity';
 import NavBar from '../layout/NavBar';
 import ActivityDashboard from '../features/activities/dashboard/ActivityDashboard';
 import {v4 as uuid} from 'uuid';
+import agent from '../api/agent';
 
 function App() {
 
@@ -13,10 +13,7 @@ function App() {
   const [editMode, setEditMode] = useState<boolean>(false);
   
   useEffect(() => {
-    axios.get<Activity[]>('http://localhost:5000/api/activities')
-      .then(res => {
-        setActivities(res.data);
-      });
+    agent.Activities.list().then(data => setActivities(data.map(a => ({ ...a, date: a.date.split('T')[0] }))));  
   }, []);
 
   function selectActivity (activity: Activity) {
