@@ -27,7 +27,7 @@ function ActivityDetails({ activity } : Props) {
             </Card.Content>
             <Card.Content extra>
                 <ButtonGroup widths='2'>
-                    <Button onClick={() => openForm(activity)} basic color='blue' content='Edit' />
+                    <Button onClick={openForm} basic color='blue' content='Edit' />
                     <Button onClick={unselectActivity} basic color='grey' content='Cancel' />
                 </ButtonGroup>
             </Card.Content>

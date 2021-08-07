@@ -7,7 +7,7 @@ import { useStore } from '../../../app/stores/store';
 function ActivityList() {
 
     const { activityStore } = useStore();
-    const { activities, loading, selectActivity, deleteActivity } = activityStore;
+    const { activitiesByDate, loading, selectActivity, deleteActivity } = activityStore;
     
     const [targetId, setTargetId] = useState('');
     
@@ -20,7 +20,7 @@ function ActivityList() {
     return (
         <Segment>
             <Item.Group divided>
-                {activities.map((activity) => (
+                {activitiesByDate.map((activity) => (
                     <Item.Content key={activity.id}>
                         <Item.Header as='a'>{activity.title}</Item.Header>
                         <Item.Meta>{activity.date}</Item.Meta>
@@ -29,7 +29,7 @@ function ActivityList() {
                             <div>{activity.city}, {activity.venue}</div>
                         </Item.Description>
                         <Item.Extra>
-                            <Button onClick={() => selectActivity(activity)} 
+                            <Button onClick={() => selectActivity(activity.id)} 
                                 floated='right' content='View' color='blue'/>
                             <Button 
                                 name={activity.id} 
