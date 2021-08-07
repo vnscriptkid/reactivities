@@ -1,30 +1,26 @@
-import React, { SyntheticEvent } from 'react';
-import { useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { Button, Divider, Item, Label, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/Activity';
+
 import { useStore } from '../../../app/stores/store';
 
-interface Props {
-    selectActivity: (activity: Activity) => void;
-    deleteActivity: (id: string) => void;
-    submitting: boolean;
-}
-
-function ActivityList({selectActivity, deleteActivity, submitting} : Props) {
+function ActivityList() {
 
     const { activityStore } = useStore();
+    const { activities, loading, selectActivity, deleteActivity } = activityStore;
     
     const [targetId, setTargetId] = useState('');
     
     function handleDeleteActivity(event: SyntheticEvent<HTMLButtonElement>) {
         setTargetId(event.currentTarget.name);
+        
         deleteActivity(event.currentTarget.name)
     }
     
     return (
         <Segment>
             <Item.Group divided>
-                {activityStore.activities.map((activity) => (
+                {activities.map((activity) => (
                     <Item.Content key={activity.id}>
                         <Item.Header as='a'>{activity.title}</Item.Header>
                         <Item.Meta>{activity.date}</Item.Meta>
@@ -37,7 +33,8 @@ function ActivityList({selectActivity, deleteActivity, submitting} : Props) {
                                 floated='right' content='View' color='blue'/>
                             <Button 
                                 name={activity.id} 
-                                loading={submitting && targetId === activity.id} 
+                                loading={loading && targetId === activity.id} 
+                                disabled={loading && targetId === activity.id}
                                 onClick={handleDeleteActivity} 
                                 floated='right' content='Delete' color='red'/>
                             <Label basic content={activity.category}/>
@@ -50,4 +47,4 @@ function ActivityList({selectActivity, deleteActivity, submitting} : Props) {
     );
 }
 
-export default ActivityList;
+export default observer(ActivityList);
