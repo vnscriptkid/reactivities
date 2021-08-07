@@ -4,10 +4,11 @@ import { Activity } from '../../../models/Activity';
 
 interface Props {
     activity: Activity;
-    handleActivityCancelled: () => void;
+    cancelSelectActivity: () => void;
+    openEditMode: (activity: Activity | undefined) => void;
 }
 
-function ActivityDetails({ activity, handleActivityCancelled } : Props) {
+function ActivityDetails({ activity, cancelSelectActivity, openEditMode } : Props) {
     return (
         <Card fluid>
             <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
@@ -22,8 +23,8 @@ function ActivityDetails({ activity, handleActivityCancelled } : Props) {
             </Card.Content>
             <Card.Content extra>
                 <ButtonGroup widths='2'>
-                    <Button basic color='blue' content='Edit' />
-                    <Button onClick={handleActivityCancelled} basic color='grey' content='Cancel' />
+                    <Button onClick={() => openEditMode(activity)} basic color='blue' content='Edit' />
+                    <Button onClick={cancelSelectActivity} basic color='grey' content='Cancel' />
                 </ButtonGroup>
             </Card.Content>
         </Card>

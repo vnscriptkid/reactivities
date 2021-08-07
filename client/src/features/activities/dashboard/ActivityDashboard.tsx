@@ -7,25 +7,47 @@ import ActivityList from './ActivityList';
 
 interface Props {
     activities: Activity[];
-    selectedActivity: Activity | null;
-    handleActivitySelected: (activity: Activity) => void;
-    handleActivityCancelled: () => void;
+    selectedActivity?: Activity;
+    selectActivity: (activity: Activity) => void;
+    cancelSelectActivity: () => void;
+    openEditMode: (activity: Activity | undefined) => void;
+    cancelEditMode: () => void;
+    editMode: boolean;
+    createOrUpdate: (activity: Activity) => void;
+    handleDeleteActivity: (id: string) => void;
 }
 
-export default function ActivityDashboard({activities, handleActivityCancelled, handleActivitySelected, selectedActivity} : Props) {
+export default function ActivityDashboard({
+    activities, 
+    cancelSelectActivity, 
+    selectActivity, 
+    selectedActivity,
+    openEditMode,
+    cancelEditMode,
+    editMode,
+    createOrUpdate,
+    handleDeleteActivity
+} : Props) {
     return (
         <Grid>
             <Grid.Column width='10'>
                 <ActivityList 
                     activities={activities} 
-                    handleActivitySelected={handleActivitySelected}/>
+                    selectActivity={selectActivity}
+                    handleDeleteActivity={handleDeleteActivity}
+                    />
             </Grid.Column>
             <Grid.Column width='6'>
-                {selectedActivity && <ActivityDetails 
+                {selectedActivity && !editMode && <ActivityDetails 
                     activity={selectedActivity}
-                    handleActivityCancelled={handleActivityCancelled}
+                    cancelSelectActivity={cancelSelectActivity}
+                    openEditMode={openEditMode}
                 />}
-                <ActivityForm />
+                {editMode && <ActivityForm 
+                    selectedActivity={selectedActivity}
+                    cancelEditMode={cancelEditMode}
+                    createOrUpdate={createOrUpdate}
+                />}
             </Grid.Column>
         </Grid>
     );

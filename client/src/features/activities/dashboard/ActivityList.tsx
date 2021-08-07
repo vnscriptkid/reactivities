@@ -4,10 +4,11 @@ import { Activity } from '../../../models/Activity';
 
 interface Props {
     activities: Activity[];
-    handleActivitySelected: (activity: Activity) => void;
+    selectActivity: (activity: Activity) => void;
+    handleDeleteActivity: (id: string) => void;
 }
 
-function ActivityList({activities, handleActivitySelected} : Props) {
+function ActivityList({activities, selectActivity, handleDeleteActivity} : Props) {
     return (
         <Segment>
             <Item.Group divided>
@@ -20,8 +21,10 @@ function ActivityList({activities, handleActivitySelected} : Props) {
                             <div>{activity.city}, {activity.venue}</div>
                         </Item.Description>
                         <Item.Extra>
-                            <Button onClick={() => handleActivitySelected(activity)} 
+                            <Button onClick={() => selectActivity(activity)} 
                                 floated='right' content='View' color='blue'/>
+                                <Button onClick={() => handleDeleteActivity(activity.id)} 
+                                floated='right' content='Delete' color='red'/>
                             <Label basic content={activity.category}/>
                         </Item.Extra>
                         <Divider />
