@@ -7,7 +7,6 @@ export default class ActivityStore {
     activityRegistry = new Map<string, Activity>();
     initialLoading = true;
     selectedActivity: Activity | undefined = undefined;
-    isFormOpen = false;
     loading = false;
 
     constructor() {
@@ -23,10 +22,34 @@ export default class ActivityStore {
         this.setInitialLoading(true);
         try {
             const activities = await agent.Activities.list();
-            activities.forEach(a => {
-                a.date = a.date.split('T')[0]
-                this.activityRegistry.set(a.id, a);
-            });
+            activities.forEach(a => this.storeActivity(a));
+
+        } catch (e) {
+            console.error(e);
+        } finally {
+            this.setInitialLoading(false);
+        }
+    }
+
+    storeActivity = (activity: Activity) => {
+        activity.date = activity.date.split('T')[0]
+        this.activityRegistry.set(activity.id, activity);
+        return activity;
+    }
+
+    loadActivity = async (id: string) => {
+        if (this.activityRegistry.has(id)) {
+            this.selectedActivity = this.activityRegistry.get(id);
+            return;
+        }
+        
+        try {
+            this.setInitialLoading(true);
+            const activity = await agent.Activities.details(id);
+
+            runInAction(() => {
+                this.selectedActivity = this.storeActivity(activity);
+            })
         } catch (e) {
             console.error(e);
         } finally {
@@ -50,14 +73,6 @@ export default class ActivityStore {
         this.setSelectedActivity(undefined);
     }
 
-    openForm = () => {
-        this.isFormOpen = true;
-    }
-
-    closeForm = () => {
-        this.isFormOpen = false;
-    }
-
     setLoading = (state: boolean) => {
         this.loading = state;
     }
@@ -71,8 +86,6 @@ export default class ActivityStore {
 
             runInAction(() => {
                 this.activityRegistry.set(newActivity.id, activity);
-                this.closeForm();
-                this.selectActivity(newActivity.id);
             })
         } catch (e) {
             console.error(e);
@@ -89,9 +102,6 @@ export default class ActivityStore {
 
             runInAction(() => {
                 this.activityRegistry.set(activity.id, activity);
-                
-                this.closeForm();
-                this.selectActivity(activity.id);
             })
         } catch (e) {
             console.error(e);
@@ -109,8 +119,6 @@ export default class ActivityStore {
 
             runInAction(() => {
                 this.activityRegistry.delete(id);
-
-                if (this.selectedActivity?.id === id) this.unselectActivity();
             })
         } catch (e) {
             console.error(e);

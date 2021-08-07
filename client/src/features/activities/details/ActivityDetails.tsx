@@ -1,37 +1,44 @@
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Button, ButtonGroup, Card, Image } from 'semantic-ui-react';
+import Loading from '../../../app/layout/Loading';
 
-import { Activity } from '../../../app/models/Activity';
 import { useStore } from '../../../app/stores/store';
 
-interface Props {
-    activity: Activity;
-}
-
-function ActivityDetails({ activity } : Props) {
+function ActivityDetails() {
 
     const {activityStore} = useStore();
-    const {openForm, unselectActivity} = activityStore;
+    const { selectedActivity, loadActivity, initialLoading} = activityStore;
+
+    const {id} = useParams<{ id: string }>();
+    
+    useEffect(() => {
+        loadActivity(id);
+    }, [loadActivity, id]);
+    
+    if (!selectedActivity || initialLoading) return <Loading />
     
     return (
         <Card fluid>
-            <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
+            <Image src={`/assets/categoryImages/${selectedActivity.category}.jpg`} />
             <Card.Content>
-                <Card.Header>{activity.title}</Card.Header>
+                <Card.Header>{selectedActivity.title}</Card.Header>
                 <Card.Meta>
-                    <span>{activity.date}</span>
+                    <span>{selectedActivity.date}</span>
                 </Card.Meta>
                 <Card.Description>
-                    {activity.description}
+                    {selectedActivity.description}
                 </Card.Description>
             </Card.Content>
             <Card.Content extra>
                 <ButtonGroup widths='2'>
-                    <Button onClick={openForm} basic color='blue' content='Edit' />
-                    <Button onClick={unselectActivity} basic color='grey' content='Cancel' />
+                    <Button basic color='blue' content='Edit' />
+                    <Button basic color='grey' content='Cancel' />
                 </ButtonGroup>
             </Card.Content>
         </Card>
     );
 }
 
-export default ActivityDetails;
+export default observer(ActivityDetails);
