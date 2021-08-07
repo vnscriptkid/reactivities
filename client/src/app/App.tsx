@@ -16,16 +16,11 @@ function App() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
   const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [submitting, setSumitting] = useState(false);
   
-  useEffect(() => {
-    setLoading(true);
-    agent.Activities.list().then(data => {
-      setLoading(false);
-      setActivities(data.map(a => ({ ...a, date: a.date.split('T')[0] })))
-    });  
-  }, []);
+  useEffect(() => { 
+    activityStore.loadActivities();
+  }, [activityStore]);
 
   function selectActivity (activity: Activity) {
     setSelectedActivity(activity);
@@ -71,7 +66,7 @@ function App() {
     setActivities(activities.filter(a => a.id !== id));
   }
 
-  if (loading) return <Loading />
+  if (activityStore.initialLoading) return <Loading />
   
   return (
     <>
