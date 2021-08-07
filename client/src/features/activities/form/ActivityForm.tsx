@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { Button, Form, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../models/Activity';
+import { Activity } from '../../../app/models/Activity';
 
 interface Props {
     selectedActivity?: Activity;

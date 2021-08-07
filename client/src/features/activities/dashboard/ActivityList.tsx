@@ -1,7 +1,7 @@
 import React, { SyntheticEvent } from 'react';
 import { useState } from 'react';
 import { Button, Divider, Item, Label, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../models/Activity';
+import { Activity } from '../../../app/models/Activity';
 
 interface Props {
     activities: Activity[];
