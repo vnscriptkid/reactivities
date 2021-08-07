@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button, Form, Segment } from 'semantic-ui-react';
 
