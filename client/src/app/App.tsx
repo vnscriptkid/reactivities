@@ -13,6 +13,7 @@ function App() {
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSumitting] = useState(false);
   
   useEffect(() => {
     setLoading(true);
@@ -38,10 +39,23 @@ function App() {
     setEditMode(false);
   }
 
-  function handleCreateOrUpdateActivity (activity: Activity) {
-    if (activity.id) setActivities(activities.map(a => a.id === activity.id ? activity : a));
-    else setActivities([...activities, { ...activity, id: uuid() }])
+  async function handleCreateOrUpdateActivity (activity: Activity) {
+    setSumitting(true);
+    
+    if (activity.id) { // update activity
+      await agent.Activities.update(activity)
 
+      setActivities(activities.map(a => a.id === activity.id ? activity : a));
+    }
+    else { // create activity
+      const newActivity: Activity = { ...activity, id: uuid() };
+
+      await agent.Activities.create(newActivity);
+      
+      setActivities([...activities, activity ])
+    }
+
+    setSumitting(false);
     setEditMode(false);
     setSelectedActivity(activity);
   }
@@ -66,6 +80,7 @@ function App() {
           editMode={editMode}
           createOrUpdate={handleCreateOrUpdateActivity}
           handleDeleteActivity={handleDeleteActivity}
+          submitting={submitting}
         />
       </Container>
     </>

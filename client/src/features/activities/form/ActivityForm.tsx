@@ -7,9 +7,10 @@ interface Props {
     selectedActivity?: Activity;
     cancelEditMode: () => void;
     createOrUpdate: (activity: Activity) => void;
+    submitting: boolean;
 }
 
-function ActivityForm({ cancelEditMode, selectedActivity, createOrUpdate } : Props) {
+function ActivityForm({ cancelEditMode, selectedActivity, createOrUpdate, submitting } : Props) {
 
     const initalState: Activity = selectedActivity ?? {
         id: '',
@@ -25,7 +26,7 @@ function ActivityForm({ cancelEditMode, selectedActivity, createOrUpdate } : Pro
 
     const onChangeInput = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
-        setActivity({ ...activity, [name]: value })
+        setActivity({ ...activity, [name]: value });
     }
 
     return (
@@ -37,7 +38,7 @@ function ActivityForm({ cancelEditMode, selectedActivity, createOrUpdate } : Pro
                 <Form.Input type='date' value={activity.date} onChange={onChangeInput} name='date' placeholder='Date' />
                 <Form.Input value={activity.city} onChange={onChangeInput} name='city' placeholder='City' />
                 <Form.Input value={activity.venue} onChange={onChangeInput} name='venue' placeholder='Venue' />
-                <Button floated='right' positive type='submit' content='Submit' />
+                <Button loading={submitting} disabled={submitting} floated='right' positive type='submit' content='Submit' />
                 <Button onClick={cancelEditMode} floated='right' type='submit' content='Cancel' />
             </Form>
         </Segment>
