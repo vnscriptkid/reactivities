@@ -1,11 +1,10 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { v4 as uuid } from "uuid";
 import agent from "../api/agent";
 import { Activity } from "../models/Activity";
 
 export default class ActivityStore {
     activityRegistry = new Map<string, Activity>();
-    initialLoading = true;
+    initialLoading = false;
     selectedActivity: Activity | undefined = undefined;
     loading = false;
 
@@ -32,7 +31,7 @@ export default class ActivityStore {
     }
 
     storeActivity = (activity: Activity) => {
-        activity.date = activity.date.split('T')[0]
+        activity.date = activity.date && activity.date.includes('T') ? activity.date.split('T')[0] : activity.date;
         this.activityRegistry.set(activity.id, activity);
         return activity;
     }
@@ -40,7 +39,7 @@ export default class ActivityStore {
     loadActivity = async (id: string) => {
         if (this.activityRegistry.has(id)) {
             this.selectedActivity = this.activityRegistry.get(id);
-            return;
+            return this.selectedActivity;
         }
         
         try {
@@ -50,6 +49,8 @@ export default class ActivityStore {
             runInAction(() => {
                 this.selectedActivity = this.storeActivity(activity);
             })
+
+            return activity;
         } catch (e) {
             console.error(e);
         } finally {
@@ -79,13 +80,11 @@ export default class ActivityStore {
 
     createActivity = async (activity: Activity) => {
         this.setLoading(true);
-        const newActivity: Activity = { ...activity, id: uuid() };
-    
         try {
-            await agent.Activities.create(newActivity);
+            await agent.Activities.create(activity);
 
             runInAction(() => {
-                this.activityRegistry.set(newActivity.id, activity);
+                this.activityRegistry.set(activity.id, activity);
             })
         } catch (e) {
             console.error(e);

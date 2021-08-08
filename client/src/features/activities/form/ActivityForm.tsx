@@ -4,13 +4,17 @@ import { Button, Form, Segment } from 'semantic-ui-react';
 
 import { Activity } from '../../../app/models/Activity';
 import { useStore } from '../../../app/stores/store';
+import { useEffect } from 'react';
+import { Link, useHistory, useParams } from 'react-router-dom';
+import Loading from '../../../app/layout/Loading';
+import { v4 as uuid } from 'uuid';
 
 function ActivityForm() {
     
     const { activityStore } = useStore();
-    const { selectedActivity, createActivity, updateActivity, loading } = activityStore;
+    const { loading, initialLoading, createActivity, updateActivity, loadActivity } = activityStore;
 
-    const initalState: Activity = selectedActivity ?? {
+    const initalState: Activity = {
         id: '',
         title: '',
         description: '',
@@ -22,15 +26,35 @@ function ActivityForm() {
 
     const [activity, setActivity] = useState(initalState);
 
+    const {id} = useParams<{ id: string }>();
+
+    const history = useHistory();
+
+    useEffect(() => {
+        if (id) {
+            loadActivity(id).then(a => {
+                if (a) setActivity(a);
+            });
+        }
+    }, [id, loadActivity]);
+
     const onChangeInput = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
         setActivity({ ...activity, [name]: value });
     }
 
     const handleSubmit = () => {
-        if (activity.id) updateActivity(activity);
-        else createActivity(activity);
+        if (activity.id) {
+            updateActivity(activity)
+                .then(() => history.push(`/activities/${activity.id}`));
+        } else {
+            const id = uuid();
+            createActivity({ ...activity, id })
+                .then(() => history.push(`/activities/${id}`));
+        }
     }
+
+    if (initialLoading) return <Loading />
 
     return (
         <Segment clearing>
@@ -43,7 +67,7 @@ function ActivityForm() {
                 <Form.Input value={activity.venue} onChange={onChangeInput} name='venue' placeholder='Venue' />
 
                 <Button loading={loading} disabled={loading} floated='right' positive type='submit' content='Submit' />
-                <Button floated='right' type='submit' content='Cancel' />
+                <Button as={Link} to={id ? `/activities/${id}` : '/activities'} floated='right' content='Cancel' />
             </Form>
         </Segment>
     );
