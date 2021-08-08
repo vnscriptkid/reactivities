@@ -9,11 +9,13 @@ import Loading from '../../../app/layout/Loading';
 function ActivityDashboard() {
 
     const { activityStore  } = useStore();
-    const { loadActivities } = activityStore;
+    const { loadActivities, activityRegistry } = activityStore;
     
     useEffect(() => { 
-      loadActivities();
-    }, [loadActivities]);
+        if (activityRegistry.size < 2) {
+            loadActivities();
+        }
+    }, [loadActivities, activityRegistry]);
   
     if (activityStore.initialLoading) return <Loading />
 
