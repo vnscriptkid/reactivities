@@ -2,8 +2,10 @@ import ReactDOM from 'react-dom';
 import App from './app/App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css'
+import 'react-calendar/dist/Calendar.css'
 import { store, StoreContext } from './app/stores/store';
 import { BrowserRouter } from 'react-router-dom';
+import './app/layout/styles.css';
 
 ReactDOM.render(
   <StoreContext.Provider value={store}>
