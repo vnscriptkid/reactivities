@@ -5,6 +5,7 @@ using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -51,5 +52,40 @@ namespace API.Controllers
             return Unauthorized();
         }
 
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        {
+            if (await _userManager.Users.AnyAsync(u => u.Email == registerDto.Email.ToLower()))
+            {
+                return BadRequest("Email already exists");
+            }
+
+            if (await _userManager.Users.AnyAsync(u => u.UserName == registerDto.Username.ToLower()))
+            {
+                return BadRequest("Username already exists");
+            }
+
+            var user = new AppUser
+            {
+                UserName = registerDto.Username.ToLower(),
+                Email = registerDto.Email.ToLower(),
+                DisplayName = registerDto.DisplayName.ToLower(),
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+
+            if (result.Succeeded)
+            {
+                return new UserDto
+                {
+                    Username = user.UserName,
+                    DisplayName = user.DisplayName,
+                    Image = null,
+                    Token = _tokenService.CreateToken(user)
+                };
+            }
+
+            return BadRequest("Failed to register user");
+        }
     }
 }
