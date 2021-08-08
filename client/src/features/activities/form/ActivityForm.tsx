@@ -26,7 +26,7 @@ function ActivityForm() {
         title: '',
         description: '',
         category: '',
-        date: '',
+        date: null,
         city: '',
         venue: ''
     };

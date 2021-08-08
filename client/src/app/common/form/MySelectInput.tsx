@@ -11,8 +11,6 @@ interface Props {
 function MySelectInput(props: Props) {
     const [ field, meta, helpers ] = useField(props.name);
 
-    console.log('select: ', { ...meta })
-    
     return (
         <Form.Field error={meta.touched && !!meta.error}>
             <label>{props.label}</label>
