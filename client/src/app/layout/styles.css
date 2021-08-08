@@ -9,6 +9,10 @@ body {
   border-radius: 0.28571429rem;
 }
 
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
 /* Homepage */
 .masthead {
   display: flex;

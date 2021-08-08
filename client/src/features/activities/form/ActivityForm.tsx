@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import { observer } from 'mobx-react-lite';
-import { Button, FormField, Label, Segment } from 'semantic-ui-react';
+import { Button, Segment } from 'semantic-ui-react';
 
 import { Activity } from '../../../app/models/Activity';
 import { useStore } from '../../../app/stores/store';
@@ -8,9 +8,13 @@ import { useEffect } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import Loading from '../../../app/layout/Loading';
 import { v4 as uuid } from 'uuid';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import MyTextInput from '../../../app/common/form/MyTextInput';
+import MyTextArea from '../../../app/common/form/MyTextArea';
+import MySelectInput from '../../../app/common/form/MySelectInput';
+import { categoryOptions } from '../../../app/common/options/categoryOptions';
+import MyDateInput from '../../../app/common/form/MyDateInput';
 
 function ActivityForm() {
     
@@ -40,11 +44,6 @@ function ActivityForm() {
             });
         }
     }, [id, loadActivity]);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = event.target;
-        setActivity({ ...activity, [name]: value });
-    }
 
     const handleSubmit = () => {
         if (activity.id) {
@@ -79,9 +78,15 @@ function ActivityForm() {
                 {({handleSubmit}) => (
                     <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
                         <MyTextInput name='title' placeholder='Title' />
-                        <MyTextInput name='description' placeholder='Description' />
-                        <MyTextInput name='category' placeholder='Category' />
-                        <MyTextInput name='date' placeholder='Date' />
+                        <MyTextArea rows={3} name='description' placeholder='Description' />
+                        <MySelectInput options={categoryOptions} name='category' placeholder='Category' />
+                        <MyDateInput 
+                            placeholderText='Date'
+                            name='date' 
+                            showTimeSelect
+                            timeCaption='time'
+                            dateFormat='MMMM d, yyyy h:mm aa'
+                        />
                         <MyTextInput name='city' placeholder='City' />
                         <MyTextInput name='venue' placeholder='Venue' />
 
