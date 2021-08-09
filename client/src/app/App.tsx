@@ -10,6 +10,7 @@ import LoginForm from '../features/users/LoginForm';
 import { useStore } from './stores/store';
 import { useEffect } from 'react';
 import Loading from './layout/Loading';
+import ModalContainer from './common/modals/ModalContainer';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
 
   return (
     <>
+      <ModalContainer />
       <Route exact path='/' component={HomePage} />
       <Route path='/(.+)' render={() => (
         <>
