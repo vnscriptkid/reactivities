@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Activity } from '../models/Activity';
 import { User, UserFormValues } from '../models/User';
+import { store } from '../stores/store';
 
 function sleep (delay: number) {
     return new Promise(resolve => {
@@ -18,6 +19,12 @@ axios.interceptors.response.use(async response => {
         console.log(error);
         return await Promise.reject(error);
     }
+})
+
+axios.interceptors.request.use(config => {
+    const token = store.commonStore.token;
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
 })
 
 const getResponseBody = <T> (response: AxiosResponse<T>) => response.data;

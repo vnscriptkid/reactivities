@@ -7,10 +7,24 @@ import HomePage from '../features/home/HomePage';
 import ActivityForm from '../features/activities/form/ActivityForm';
 import ActivityDetails from '../features/activities/details/ActivityDetails';
 import LoginForm from '../features/users/LoginForm';
+import { useStore } from './stores/store';
+import { useEffect } from 'react';
+import Loading from './layout/Loading';
 
 function App() {
 
   const {key} = useLocation();
+  const {commonStore, userStore} = useStore();
+
+  useEffect(() => {
+    if (commonStore.token) {
+      userStore.getUser().finally(() => commonStore.setAppLoaded());
+    } else {
+      commonStore.setAppLoaded();
+    }
+  }, [commonStore, userStore]);
+
+  if (!commonStore.appLoaded) return <Loading content='App loading...' />
 
   return (
     <>
