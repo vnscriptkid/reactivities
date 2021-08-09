@@ -1,5 +1,5 @@
-import { ErrorMessage, Formik } from 'formik';
-import { Button, Form, Header, Label } from 'semantic-ui-react';
+import { Formik } from 'formik';
+import { Button, Form, Header } from 'semantic-ui-react';
 import MyTextInput from '../../app/common/form/MyTextInput';
 import * as Yup from 'yup';
 import { useStore } from '../../app/stores/store';
@@ -21,18 +21,22 @@ function RegisterForm() {
             initialValues={{ email: '', password: '', username: '', displayName: '', error: null }} 
             onSubmit={(values, {setErrors}) => userStore
                 .register(values)
-                .catch(e => console.log(e)) }
+                .catch(error => setErrors({ error })) }
         >
             {({ handleSubmit, isValid, dirty, isSubmitting, errors }) => (
                 <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
-                    <Header as='h2' content='Register to Reactivities' color='teal' textAlign='center' />
+                    <Header as='h2' content='Sign up to Reactivities' color='teal' textAlign='center' />
                     <MyTextInput name="email" placeholder="Email"/>
                     <MyTextInput name="username" placeholder="Username"/>
                     <MyTextInput name="displayName" placeholder="Display Name"/>
                     <MyTextInput name="password" placeholder="Password" type="password"/>
-                    <ErrorMessage  name='error' render={() => (
-                        <Label style={{ marginBottom: 10 }} basic color='red' content={errors.error} />
-                    )} />
+
+                    {/*
+                    TODO: Display validation errors
+                     <ErrorMessage name='error' render={() => (
+                        <ValidationErrors errors={errors.error} />
+                    )} /> */}
+                    
                     <Button 
                         loading={isSubmitting}
                         disabled={!isValid || !dirty || isSubmitting} 
