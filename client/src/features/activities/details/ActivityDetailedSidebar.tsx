@@ -1,8 +1,14 @@
 import { Segment, List, Label, Item, Image } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
+import { Activity } from '../../../app/models/Activity'
 
-export default observer(function ActivityDetailedSidebar () {
+interface Props {
+    activity: Activity;
+}
+function ActivityDetailedSidebar ({ activity }: Props) {
+    if (!activity.profiles) return null;
+    
     return (
         <>
             <Segment
@@ -13,28 +19,30 @@ export default observer(function ActivityDetailedSidebar () {
                 inverted
                 color='teal'
             >
-                3 People Going
+                {activity.profiles.length} People Going
             </Segment>
             <Segment attached>
                 <List relaxed divided>
-                    <Item style={{ position: 'relative' }}>
-                        <Label
-                            style={{ position: 'absolute' }}
-                            color='orange'
-                            ribbon='right'
-                        >
-                            Host
-                        </Label>
-                        <Image size='tiny' src={'/assets/user.png'} />
-                        <Item.Content verticalAlign='middle'>
-                            <Item.Header as='h3'>
-                                <Link to={`#`}>Bob</Link>
-                            </Item.Header>
-                            <Item.Extra style={{ color: 'orange' }}>Following</Item.Extra>
-                        </Item.Content>
-                    </Item>
+                    {activity.profiles.map(attendee => (
+                        <Item style={{ position: 'relative' }}>
+                            {attendee.username === activity.hostUsername && (<Label
+                                style={{ position: 'absolute' }}
+                                color='orange'
+                                ribbon='right'
+                            >
+                                Host
+                            </Label>)}
+                            <Image size='tiny' src={'/assets/user.png'} />
+                            <Item.Content verticalAlign='middle'>
+                                <Item.Header as='h3'>
+                                    <Link to={`#`}>{attendee.username}</Link>
+                                </Item.Header>
+                                {/* <Item.Extra style={{ color: 'orange' }}>Following</Item.Extra> */}
+                            </Item.Content>
+                        </Item>
+                    ))}
 
-                    <Item style={{ position: 'relative' }}>
+                    {/* <Item style={{ position: 'relative' }}>
                         <Image size='tiny' src={'/assets/user.png'} />
                         <Item.Content verticalAlign='middle'>
                             <Item.Header as='h3'>
@@ -51,9 +59,12 @@ export default observer(function ActivityDetailedSidebar () {
                                 <Link to={`#`}>Sally</Link>
                             </Item.Header>
                         </Item.Content>
-                    </Item>
+                    </Item> */}
                 </List>
             </Segment>
         </>
     )
-})
+}
+
+
+export default observer(ActivityDetailedSidebar);
