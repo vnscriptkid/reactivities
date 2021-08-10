@@ -40,7 +40,7 @@ namespace Application.Activities
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == _userAccessor.GetUsername());
 
-                var hostUsername = activity.Attendees.FirstOrDefault(aa => aa.isHost)?.AppUser?.UserName;
+                var hostUsername = activity.Attendees.FirstOrDefault(aa => aa.IsHost)?.AppUser?.UserName;
 
                 var attendance = activity.Attendees.FirstOrDefault(aa => aa.AppUserId == user.Id);
 
@@ -62,7 +62,7 @@ namespace Application.Activities
                     {
                         Activity = activity,
                         AppUser = user,
-                        isHost = false
+                        IsHost = false
                     };
                     // join activity
                     activity.Attendees.Add(attendance);

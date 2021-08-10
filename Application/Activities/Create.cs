@@ -33,7 +33,7 @@ namespace Application.Activities
                 var attendee = new ActivityAttendee
                 {
                     AppUser = user,
-                    isHost = true,
+                    IsHost = true,
                     Activity = request.Activity
                 };
 
