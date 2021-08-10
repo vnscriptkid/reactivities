@@ -11,5 +11,27 @@ namespace Persistence
         }
 
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Determine primary key of join table
+            builder.Entity<ActivityAttendee>()
+                .HasKey(aa => new { aa.AppUserId, aa.ActivityId });
+
+            // Determine relationship between `AppUsers` table and join table
+            builder.Entity<ActivityAttendee>()
+                .HasOne(aa => aa.AppUser)
+                .WithMany(u => u.Activities)
+                .HasForeignKey(aa => aa.AppUserId);
+
+            // Determine relationship between `Activities` table and join table
+            builder.Entity<ActivityAttendee>()
+                .HasOne(aa => aa.Activity)
+                .WithMany(a => a.Attendees)
+                .HasForeignKey(aa => aa.ActivityId);
+        }
     }
 }
