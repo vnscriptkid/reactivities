@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Activity, ActivityFormValues } from '../models/Activity';
-import { Profile } from '../models/Profile';
+import { Photo, Profile } from '../models/Profile';
 import { User, UserFormValues } from '../models/User';
 import { store } from '../stores/store';
 
@@ -53,7 +53,14 @@ const Account = {
 }
 
 const Profiles = {
-    get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+    get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
+    uploadPhoto: (file: Blob) => {
+        let formData = new FormData();   
+        formData.append('File', file);
+        return axios.post<Photo>('/photos', formData, {
+            headers: { 'Content-type': 'multipart/form-data' }
+        });
+    }
 }
 
 const agent = {

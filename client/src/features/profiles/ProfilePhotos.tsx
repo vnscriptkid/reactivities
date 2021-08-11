@@ -32,7 +32,7 @@ function ProfilePhotos({profile} : Props) {
                 </Grid.Column>
                 <Grid.Column width={16}>
                     {addPhotoMode ? (
-                        <PhotoUploadWidget />
+                        <PhotoUploadWidget setAddPhotoMode={setAddPhotoMode}/>
                     ) : (
                         <Card.Group itemsPerRow={5}>
                             {profile.photos?.map(photo => (

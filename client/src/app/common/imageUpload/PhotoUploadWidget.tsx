@@ -1,18 +1,27 @@
+import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useState } from "react";
-import { Cropper } from "react-cropper";
-import { Button, Grid, Header, Image } from "semantic-ui-react";
+import { Button, Grid, Header } from "semantic-ui-react";
+import { useStore } from "../../stores/store";
 import PhotoWidgetCropper from "./PhotoWidgetCropper";
 import PhotoWidgetDropzone from "./PhotoWidgetDropzone";
 
-function PhotoUploadWidget() {
+interface Props {
+    setAddPhotoMode: (state: boolean) => void;
+}
+
+function PhotoUploadWidget({ setAddPhotoMode }: Props) {
     const [files, setFiles] = useState<any>([]);
 
     const [cropper, setCropper] = useState<Cropper>();
 
+    const {profileStore: { uploading, uploadPhoto }} = useStore();
+
     function onCrop() {
         if (cropper) {
-            cropper.getCroppedCanvas().toBlob(blob => console.log(blob));
+            cropper.getCroppedCanvas()
+                .toBlob(blob => uploadPhoto(blob!)
+                .then(() => setAddPhotoMode(false)));
         }
     }
     
@@ -42,8 +51,8 @@ function PhotoUploadWidget() {
                     <>
                         <div className='img-preview' style={{ minHeight: 200, overflow: 'hidden' }}></div>
                         <Button.Group widths={2}>
-                            <Button onClick={onCrop} positive icon='check' />
-                            <Button onClick={() => setFiles([])} icon='close' />
+                            <Button loading={uploading} disabled={uploading} onClick={onCrop} positive icon='check' />
+                            <Button disabled={uploading} onClick={() => setFiles([])} icon='close' />
                         </Button.Group>
                     </>
                 )}
@@ -52,4 +61,4 @@ function PhotoUploadWidget() {
     );
 }
 
-export default PhotoUploadWidget;
+export default observer(PhotoUploadWidget);
