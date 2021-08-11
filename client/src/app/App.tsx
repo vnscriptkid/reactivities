@@ -11,6 +11,7 @@ import { useStore } from './stores/store';
 import { useEffect } from 'react';
 import Loading from './layout/Loading';
 import ModalContainer from './common/modals/ModalContainer';
+import ProfilePage from '../features/profiles/ProfilePage';
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
           <Container style={{marginTop: '7em'}}>
             <Route exact path='/activities' component={ActivityDashboard} />
             <Route path='/activities/:id' component={ActivityDetails} />
+            <Route path='/profiles/:username' component={ProfilePage} />
             <Route key={key} path={['/createActivity', '/manage/:id']} component={ActivityForm} />
             <Route path='/login' component={LoginForm} />
           </Container>
