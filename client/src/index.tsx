@@ -7,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { store, StoreContext } from './app/stores/store';
 import { Router } from 'react-router-dom';
 import './app/layout/styles.css';
+import 'cropperjs/dist/cropper.css';
 import {createBrowserHistory} from 'history';
 
 export const history = createBrowserHistory();
