@@ -6,7 +6,7 @@ import { Form, Formik } from 'formik';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { Activity, ActivityFormValues } from '../../../app/models/Activity';
+import { ActivityFormValues } from '../../../app/models/Activity';
 import { useStore } from '../../../app/stores/store';
 import Loading from '../../../app/layout/Loading';
 import MyTextInput from '../../../app/common/form/MyTextInput';
