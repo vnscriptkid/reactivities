@@ -24,7 +24,7 @@ function ActivityDetailedSidebar ({ activity }: Props) {
             <Segment attached>
                 <List relaxed divided>
                     {activity.profiles.map(attendee => (
-                        <Item style={{ position: 'relative' }}>
+                        <Item key={attendee.username} style={{ position: 'relative' }}>
                             {attendee.username === activity.hostUsername && (<Label
                                 style={{ position: 'absolute' }}
                                 color='orange'

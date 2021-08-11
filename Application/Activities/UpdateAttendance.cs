@@ -47,7 +47,7 @@ namespace Application.Activities
                 if (attendance != null && user.UserName == hostUsername)
                 {
                     // cancel it
-                    activity.IsCancelled = true;
+                    activity.IsCancelled = !activity.IsCancelled;
                 }
 
                 if (attendance != null && user.UserName != hostUsername)
@@ -67,6 +67,10 @@ namespace Application.Activities
                     // join activity
                     activity.Attendees.Add(attendance);
                 }
+
+                Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
+                _context.ChangeTracker.DetectChanges();
+                Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
 
                 var result = await _context.SaveChangesAsync() > 0;
 

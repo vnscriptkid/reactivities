@@ -6,7 +6,7 @@ import { Form, Formik } from 'formik';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { Activity } from '../../../app/models/Activity';
+import { Activity, ActivityFormValues } from '../../../app/models/Activity';
 import { useStore } from '../../../app/stores/store';
 import Loading from '../../../app/layout/Loading';
 import MyTextInput from '../../../app/common/form/MyTextInput';
@@ -20,17 +20,7 @@ function ActivityForm() {
     const { activityStore } = useStore();
     const { initialLoading, createActivity, updateActivity, loadActivity } = activityStore;
 
-    const initalState: Activity = {
-        id: '',
-        title: '',
-        description: '',
-        category: '',
-        date: null,
-        city: '',
-        venue: ''
-    };
-
-    const [activity, setActivity] = useState(initalState);
+    const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues());
 
     const {id} = useParams<{ id: string }>();
 
@@ -39,14 +29,12 @@ function ActivityForm() {
     useEffect(() => {
         if (id) {
             loadActivity(id).then(a => {
-                if (a) setActivity(a);
+                if (a) setActivity(new ActivityFormValues(a));
             });
         }
     }, [id, loadActivity]);
 
-    const handleFormSubmit = (values: Activity) => {
-        console.log(values);
-
+    const handleFormSubmit = (values: ActivityFormValues) => {
         if (id) {
             updateActivity(values)
                 .then(() => history.push(`/activities/${values.id}`));
