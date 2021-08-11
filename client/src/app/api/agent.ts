@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Activity, ActivityFormValues } from '../models/Activity';
+import { Profile } from '../models/Profile';
 import { User, UserFormValues } from '../models/User';
 import { store } from '../stores/store';
 
@@ -51,9 +52,14 @@ const Account = {
     register: (values: UserFormValues) => requests.post<User>('/account/register', values),
 }
 
+const Profiles = {
+    get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+}
+
 const agent = {
     Activities,
-    Account
+    Account,
+    Profiles
 }
 
 export default agent;
