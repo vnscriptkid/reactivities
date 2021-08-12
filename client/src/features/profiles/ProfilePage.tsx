@@ -11,13 +11,13 @@ function ProfilePage() {
 
     const {username} = useParams<{ username: string }>();
 
-    const {profileStore: { loadProfile, loading, profile }} = useStore();
+    const {profileStore: { loadProfile, initialLoading, profile }} = useStore();
 
     useEffect(() => {
         if (username) loadProfile(username);
     }, [username, loadProfile]);
 
-    if (loading) return <Loading  content='Loading profile...' />
+    if (initialLoading) return <Loading  content='Loading profile...' />
     
     return (
         <Grid>

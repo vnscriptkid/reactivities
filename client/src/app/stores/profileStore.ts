@@ -1,12 +1,13 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
-import { Profile } from "../models/Profile";
+import { Photo, Profile } from "../models/Profile";
 import { store } from "./store";
 
 export default class ProfilesStore {
     profile: Profile | null = null;
     loading = false;
     uploading = false;
+    initialLoading = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -20,7 +21,7 @@ export default class ProfilesStore {
     }
 
     loadProfile = async (username: string) => {
-        this.loading = true;
+        this.initialLoading = true;
 
         try {
             const profile = await agent.Profiles.get(username);
@@ -28,7 +29,7 @@ export default class ProfilesStore {
         } catch (e) {
             console.error(e);
         } finally {
-            runInAction(() => this.loading = false);
+            runInAction(() => this.initialLoading = false);
         }
     }
 
@@ -45,6 +46,45 @@ export default class ProfilesStore {
             console.error(e);
         } finally {
             runInAction(() => this.uploading = false);
+        }
+    }
+
+    setMainPhoto = async (photo: Photo) => {
+        this.loading = true;
+
+        try {
+            await agent.Profiles.setMain(photo.id);
+
+            runInAction(() => {
+                if (this.profile && this.profile.photos && store.userStore.user) {
+                    store.userStore.setImage(photo.url);
+                    this.profile.image = photo.url;
+                    this.profile.photos.find(p => p.isMain)!.isMain = false;
+                    this.profile.photos.find(p => p.id === photo.id)!.isMain = true;
+                }
+            });
+        } catch (e) {
+            console.error(e);
+        } finally {
+            runInAction(() => this.loading = false)
+        }
+    }
+
+    deletePhoto = async (photo: Photo) => {
+        this.loading = true;
+
+        try {
+            await agent.Profiles.deletePhoto(photo.id);
+            
+            runInAction(() => {
+                if (this.profile && this.profile.photos) {
+                    this.profile.photos = this.profile.photos.filter(p => p.id !== photo.id);
+                }
+            })
+        } catch (e) {
+            console.error(e);
+        } finally {
+            runInAction(() => this.loading = false)
         }
     }
 }
