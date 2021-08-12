@@ -11,7 +11,7 @@ interface Props {
 
 function ProfilePhotos({profile} : Props) {
 
-    const {profileStore: { isCurrentUser, loading, setMainPhoto }} = useStore();
+    const {profileStore: { isCurrentUser, loading, setMainPhoto, deletePhoto }} = useStore();
 
     const [ addPhotoMode, setAddPhotoMode ] = useState(false);
 
@@ -20,6 +20,11 @@ function ProfilePhotos({profile} : Props) {
     function handleSetMainPhoto(photo: Photo, event: SyntheticEvent<HTMLButtonElement>) {
         setTargetId(event.currentTarget.name);
         setMainPhoto(photo);
+    }
+
+    async function handleDeletePhoto(photo: Photo, event: SyntheticEvent<HTMLButtonElement>) {
+        setTargetId(event.currentTarget.name);
+        await deletePhoto(photo);
     }
     
     return (
@@ -51,15 +56,19 @@ function ProfilePhotos({profile} : Props) {
                                                 basic={!photo.isMain}
                                                 color='green'
                                                 content='Main'
-                                                name={photo.id}
-                                                disabled={photo.isMain}
-                                                loading={targetId === photo.id && loading}
+                                                name={'main' + photo.id}
+                                                disabled={photo.isMain || (targetId?.includes(photo.id) && loading)}
+                                                loading={'main' + photo.id === targetId && loading}
                                                 onClick={e => handleSetMainPhoto(photo, e)}
                                             />
                                             <Button 
                                                 basic
                                                 color='red'
                                                 icon='trash'
+                                                name={photo.id}
+                                                disabled={photo.isMain || (targetId?.includes(photo.id) && loading)}
+                                                loading={targetId === photo.id && loading}
+                                                onClick={e => handleDeletePhoto(photo, e)}
                                             />
                                         </Button.Group>
                                     )}
