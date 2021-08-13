@@ -13,13 +13,15 @@ import ActivityDetailedSidebar from './ActivityDetailedSidebar';
 function ActivityDetails() {
 
     const {activityStore} = useStore();
-    const { selectedActivity: activity, loadActivity, initialLoading} = activityStore;
+    const { selectedActivity: activity, loadActivity, initialLoading, clearSelectedActivity} = activityStore;
 
     const {id} = useParams<{ id: string }>();
     
     useEffect(() => {
         loadActivity(id);
-    }, [loadActivity, id]);
+
+        return () => clearSelectedActivity();
+    }, [loadActivity, id, clearSelectedActivity]);
     
     if (!activity || initialLoading) return <Loading />
     
