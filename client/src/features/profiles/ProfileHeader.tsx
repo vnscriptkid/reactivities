@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { Button, Divider, Grid, Header, Item, Reveal, Segment, Statistic, StatisticGroup } from "semantic-ui-react";
+import { Divider, Grid, Header, Item, Segment, Statistic, StatisticGroup } from "semantic-ui-react";
 import { Profile } from "../../app/models/Profile";
 import FollowButton from "./FollowButton";
 
@@ -8,6 +8,7 @@ interface Props {
 }
 
 function ProfileHeader({ profile }: Props) {
+
     return (
         <Segment>
             <Grid>
