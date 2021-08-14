@@ -188,4 +188,15 @@ export default class ActivityStore {
     clearSelectedActivity = () => {
         this.selectedActivity = undefined;
     }
+
+    updateAttendeeFollowing = (username: string, following: boolean) => {
+        this.activityRegistry.forEach((activity) => {
+            activity.profiles.forEach(profile => {
+                if (profile.username === username) {
+                    profile.following = following;
+                    following ? profile.followersCount++ : profile.followersCount--;
+                }
+            })
+        });
+    }
 }

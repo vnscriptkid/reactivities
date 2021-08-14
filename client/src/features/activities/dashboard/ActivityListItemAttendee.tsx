@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import { List, Image, Popup } from 'semantic-ui-react';
 import { Profile } from '../../../app/models/Profile';
@@ -39,4 +40,4 @@ function ActivityListItemAttendee({ attendees }: Props) {
     );
 }
 
-export default ActivityListItemAttendee;
+export default observer(ActivityListItemAttendee);

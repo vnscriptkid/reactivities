@@ -87,4 +87,28 @@ export default class ProfilesStore {
             runInAction(() => this.loading = false)
         }
     }
+
+    toggleFollowing = async (username: string, following: boolean) => {
+        this.loading = true;
+
+        try {
+            await agent.Profiles.toggleFollowing(username);
+            
+            store.activityStore.updateAttendeeFollowing(username, following);
+            
+            runInAction(() => {
+
+                if (this.profile?.username !== store.userStore.user?.username) {
+                    if (this.profile?.username === username) {
+                        this.profile.following = following;
+                        following ? this.profile.followersCount++ : this.profile.followersCount--;
+                    }
+                }
+            })
+        } catch (err) {
+            console.log(err);
+        } finally {
+            runInAction(() => this.loading = false);
+        }
+    }
 }

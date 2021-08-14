@@ -62,7 +62,8 @@ const Profiles = {
         });
     },
     setMain: (photoId: string) => requests.post(`/photos/${photoId}/setmain`),
-    deletePhoto: (photoId: string) => requests.delete(`/photos/${photoId}`)
+    deletePhoto: (photoId: string) => requests.delete(`/photos/${photoId}`),
+    toggleFollowing: (username: string) => requests.post(`/follow/${username}`)
 }
 
 const agent = {
