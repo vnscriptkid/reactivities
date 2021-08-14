@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.Extensions;
 using Application.Activities;
 using Application.Core;
 using Domain;
@@ -14,7 +15,16 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ActivityDto>>> GetActivities([FromQuery] PagingParams param)
         {
-            return await Mediator.Send(new List.Query { Params = param });
+            var pagedActivities = await Mediator.Send(new List.Query { Params = param });
+
+            Response.AddPaginationHeader(
+                pagedActivities.CurrentPage,
+                pagedActivities.PageSize,
+                pagedActivities.TotalCount,
+                pagedActivities.TotalPages
+            );
+
+            return pagedActivities;
         }
 
         [HttpGet("{id}")]
