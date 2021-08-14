@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -22,9 +23,12 @@ namespace Application.Followers
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
             {
                 _mapper = mapper;
+                _userAccessor = userAccessor;
                 _context = context;
             }
 
@@ -38,14 +42,20 @@ namespace Application.Followers
                         profiles = await _context.UserFollowings
                                     .Where(uf => uf.Target.UserName == request.Username)
                                     .Select(uf => uf.Observer)
-                                    .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider)
+                                    .ProjectTo<Profiles.Profile>(
+                                        _mapper.ConfigurationProvider,
+                                        new { currentUsername = _userAccessor.GetUsername() }
+                                    )
                                     .ToListAsync();
                         break;
                     case "following":
                         profiles = await _context.UserFollowings
                                     .Where(uf => uf.Observer.UserName == request.Username)
                                     .Select(uf => uf.Target)
-                                    .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider)
+                                    .ProjectTo<Profiles.Profile>(
+                                        _mapper.ConfigurationProvider,
+                                        new { currentUsername = _userAccessor.GetUsername() }
+                                    )
                                     .ToListAsync();
                         break;
                 }
