@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -12,8 +14,11 @@ namespace Application.Activities
 {
     public class List
     {
-        public class Query : IRequest<List<ActivityDto>> { }
-        public class Handler : IRequestHandler<Query, List<ActivityDto>>
+        public class Query : IRequest<PagedList<ActivityDto>>
+        {
+            public PagingParams Params { get; set; }
+        }
+        public class Handler : IRequestHandler<Query, PagedList<ActivityDto>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -26,16 +31,17 @@ namespace Application.Activities
                 _userAccessor = userAccessor;
             }
 
-            public async Task<List<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<PagedList<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var activities = await _context.Activities
+                var query = _context.Activities
                     .ProjectTo<ActivityDto>(
                         _mapper.ConfigurationProvider,
                         new { currentUsername = _userAccessor.GetUsername() }
                     )
-                    .ToListAsync(cancellationToken);
+                    .AsQueryable();
 
-                return activities;
+                return await PagedList<ActivityDto>.CreateAsync(
+                    query, request.Params.PageNumber, request.Params.PageSize);
             }
         }
     }
