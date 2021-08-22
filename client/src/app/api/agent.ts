@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Activity, ActivityFormValues } from '../models/Activity';
 import { PaginatedResult } from '../models/Pagination';
-import { Photo, Profile } from '../models/Profile';
+import { Photo, Profile, UserActivity } from '../models/Profile';
 import { User, UserFormValues } from '../models/User';
 import { store } from '../stores/store';
 
@@ -71,7 +71,9 @@ const Profiles = {
     deletePhoto: (photoId: string) => requests.delete(`/photos/${photoId}`),
     toggleFollowing: (username: string) => requests.post(`/follow/${username}`),
     getFollowingsOrFollowers: (username: string, predicate: "following" | "followers") => 
-        requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`)
+        requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
+    listActivities: (username: string, predicate: string) => 
+        requests.get<UserActivity[]>(`/profiles/${username}/activities?predicate=${predicate}`)
 }
 
 const agent = {

@@ -4,7 +4,6 @@ import { Grid, Loader } from 'semantic-ui-react';
 
 import { useStore } from '../../../app/stores/store';
 import ActivityList from './ActivityList';
-import Loading from '../../../app/layout/Loading';
 import ActivityFilters from './ActivityFilters';
 import { PaginationParams } from '../../../app/models/Pagination';
 import InfiniteScroll from 'react-infinite-scroller';
