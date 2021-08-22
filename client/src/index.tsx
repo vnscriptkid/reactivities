@@ -1,24 +1,26 @@
-import ReactDOM from 'react-dom';
-import App from './app/App';
-import reportWebVitals from './reportWebVitals';
-import 'semantic-ui-css/semantic.min.css'
-import 'react-calendar/dist/Calendar.css'
-import 'react-datepicker/dist/react-datepicker.css'
-import { store, StoreContext } from './app/stores/store';
-import { Router } from 'react-router-dom';
-import './app/layout/styles.css';
-import 'cropperjs/dist/cropper.css';
-import {createBrowserHistory} from 'history';
+import ReactDOM from "react-dom";
+import App from "./app/App";
+import reportWebVitals from "./reportWebVitals";
+import "semantic-ui-css/semantic.min.css";
+import "react-calendar/dist/Calendar.css";
+import "react-datepicker/dist/react-datepicker.css";
+import { store, StoreContext } from "./app/stores/store";
+import { Router } from "react-router-dom";
+import "./app/layout/styles.css";
+import "cropperjs/dist/cropper.css";
+import { createBrowserHistory } from "history";
+import ScrollToTop from "./app/layout/ScrollToTop";
 
 export const history = createBrowserHistory();
 
 ReactDOM.render(
   <StoreContext.Provider value={store}>
     <Router history={history}>
+      <ScrollToTop />
       <App />
     </Router>
   </StoreContext.Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
