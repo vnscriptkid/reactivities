@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Activity, ActivityFormValues } from "../models/Activity";
 import { Pagination, PaginationParams } from "../models/Pagination";
@@ -14,19 +14,64 @@ export default class ActivityStore {
     loading = false;
     pagination: Pagination | null = null;
     paginationParams = new PaginationParams();
+    predicate = new Map().set('all', true);
 
     constructor() {
         makeAutoObservable(this)
+
+        reaction(
+            () => this.predicate.keys(),
+            () => {
+                this.paginationParams = new PaginationParams();
+                this.activityRegistry.clear();
+                this.loadActivities();
+            }
+        );
     }
 
     setPaginationParams = (params: PaginationParams) => {
         this.paginationParams = params;
     }
 
+    setPredicate = (key: string, value: string | Date) => {
+        const clearPredicates = () => {
+            this.predicate.forEach((value, key) => {
+                if (key !== 'startDate') this.predicate.delete(key);
+            });
+        }
+        
+        switch (key) {
+            case 'all':
+                clearPredicates();
+                this.predicate.set('all', value);
+                break;
+            case 'isHost':
+                clearPredicates();
+                this.predicate.set('isHost', value);
+                break;
+            case 'isGoing':
+                clearPredicates();
+                this.predicate.set('isGoing', value);
+                break;
+            case 'startDate':
+                this.predicate.delete('startDate'); // detect changes by key
+                this.predicate.set('startDate', value);
+        }
+    }
+
     get axiosParams() {
         const params = new URLSearchParams();
         params.append('pageSize', this.paginationParams.pageSize.toString());
         params.append('pageNumber', this.paginationParams.pageNumber.toString());
+
+        if (!this.predicate.has('all')) {
+            if (this.predicate.has('isHost')) params.append('ishost', this.predicate.get('isHost').toString());
+
+            else if (this.predicate.has('isGoing')) params.append('isgoing', this.predicate.get('isGoing').toString());
+        }
+
+        if (this.predicate.has('startDate')) params.append('startdate', (this.predicate.get('startDate') as Date).toISOString());
+        
         return params;
     }
 
