@@ -21,13 +21,11 @@ namespace API.Extensions
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
-            // services.AddDbContext<DataContext>(opt =>
-            // {
-            //     opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
-            // });
+
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
             services.AddDbContext<DataContext>(options =>
             {
-                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
                 string connStr;
 
@@ -69,9 +67,10 @@ namespace API.Extensions
                     policy.AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()
-                        .WithOrigins("http://localhost:3000");
+                        .WithOrigins("https://localhost:3000");
                 });
             });
+
             services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
