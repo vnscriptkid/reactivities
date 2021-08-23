@@ -6,7 +6,6 @@ import { Route, useLocation } from "react-router-dom";
 import HomePage from "../features/home/HomePage";
 import ActivityForm from "../features/activities/form/ActivityForm";
 import ActivityDetails from "../features/activities/details/ActivityDetails";
-import LoginForm from "../features/users/LoginForm";
 import { useStore } from "./stores/store";
 import { useEffect } from "react";
 import Loading from "./layout/Loading";
@@ -22,7 +21,7 @@ function App() {
     if (commonStore.token) {
       userStore.getUser().finally(() => commonStore.setAppLoaded());
     } else {
-      commonStore.setAppLoaded();
+      userStore.getFbLoginStatus().then(() => commonStore.setAppLoaded());
     }
   }, [commonStore, userStore]);
 
