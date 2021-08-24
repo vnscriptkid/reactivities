@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,18 +6,17 @@ using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Activities
 {
     public class List
     {
-        public class Query : IRequest<PagedList<ActivityDto>>
+        public class Query : IRequest<Result<PagedList<ActivityDto>>>
         {
             public ActivityParams Params { get; set; }
         }
-        public class Handler : IRequestHandler<Query, PagedList<ActivityDto>>
+        public class Handler : IRequestHandler<Query, Result<PagedList<ActivityDto>>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -31,7 +29,7 @@ namespace Application.Activities
                 _userAccessor = userAccessor;
             }
 
-            public async Task<PagedList<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<PagedList<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = _context.Activities
                     .Where(a => a.Date >= request.Params.StartDate)
@@ -52,8 +50,10 @@ namespace Application.Activities
                     query = query.Where(a => a.HostUsername == _userAccessor.GetUsername());
                 }
 
-                return await PagedList<ActivityDto>.CreateAsync(
+                var pagedActivities = await PagedList<ActivityDto>.CreateAsync(
                     query, request.Params.PageNumber, request.Params.PageSize);
+
+                return Result<PagedList<ActivityDto>>.Success(pagedActivities);
             }
         }
     }

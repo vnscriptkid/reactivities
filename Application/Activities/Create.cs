@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using Application.Interfaces;
 using Domain;
 using FluentValidation;
@@ -11,7 +12,7 @@ namespace Application.Activities
 {
     public class Create
     {
-        public class Command : IRequest
+        public class Command : IRequest<Result<Unit>>
         {
             public Activity Activity { get; set; }
         }
@@ -24,7 +25,7 @@ namespace Application.Activities
             }
         }
 
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
             private readonly IUserAccessor _userAccessor;
@@ -35,7 +36,7 @@ namespace Application.Activities
                 _userAccessor = userAccessor;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == _userAccessor.GetUsername());
 
@@ -50,9 +51,11 @@ namespace Application.Activities
 
                 _context.Activities.Add(request.Activity);
 
-                await _context.SaveChangesAsync();
+                var success = await _context.SaveChangesAsync() > 0;
 
-                return Unit.Value;
+                if (success) return Result<Unit>.Success(Unit.Value);
+
+                return Result<Unit>.Failure("Failed to create activity");
             }
         }
     }
