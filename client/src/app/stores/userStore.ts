@@ -8,6 +8,7 @@ export default class UserStore {
     user: User | null = null;
     fbAccessToken: string | null = null;
     fbLoading = false;
+    refreshTokenTimer: any = null;
 
     constructor() {
         makeAutoObservable(this);
@@ -20,8 +21,7 @@ export default class UserStore {
     login = async (values: UserFormValues) => {
         try {
             const user = await agent.Account.login(values);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
+            this.processNewUser(user);
             history.push('/activities');
             store.modalStore.closeModal();
         } catch (e) {
@@ -37,8 +37,7 @@ export default class UserStore {
 
         const loginWithFbToken = (accessToken: string) => {
             agent.Account.fbLogin(accessToken).then(user => {
-                store.commonStore.setToken(user.token);
-                runInAction(() => this.user = user);
+                this.processNewUser(user);
                 history.push('/activities');
             }).catch(err => {
                 console.error(err);
@@ -70,8 +69,7 @@ export default class UserStore {
     register = async (values: UserFormValues) => {
         try {
             const user = await agent.Account.register(values);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
+            this.processNewUser(user);
             history.push('/activities');
             store.modalStore.closeModal();
         } catch (e) {
@@ -89,7 +87,7 @@ export default class UserStore {
     getUser = async () => {
         try {
             const user = await agent.Account.current();
-            runInAction(() => this.user = user);
+            this.processNewUser(user);
         } catch (e) {
             console.error(e);
         }
@@ -97,5 +95,35 @@ export default class UserStore {
 
     setImage = (image: string) => {
         if (this.user) this.user.image = image; 
+    }
+
+    refreshToken = async () => {
+        try {
+            const user = await agent.Account.refreshToken();
+            this.processNewUser(user);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    
+    startRefreshTokenTimer = (user: User) => {
+        this.stopRefreshTokenTimer();
+
+        const jwtPayload = JSON.parse(atob(user.token.split('.')[1]));
+        const expires = new Date(jwtPayload.exp * 1000);
+        const timeout = expires.getTime() - Date.now() - 60*1000; // 30 seconds before expired
+        this.refreshTokenTimer = setTimeout(this.refreshToken, timeout);
+    }
+
+    stopRefreshTokenTimer = () => {
+        if (!this.refreshTokenTimer) return;
+
+        clearTimeout(this.refreshTokenTimer);
+    }
+
+    private processNewUser = (user: User) => {
+        store.commonStore.setToken(user.token);
+        runInAction(() => this.user = user);
+        this.startRefreshTokenTimer(user);
     }
 }

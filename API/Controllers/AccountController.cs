@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -7,6 +8,7 @@ using API.DTOs;
 using API.Services;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,6 @@ using Newtonsoft.Json;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -44,6 +45,9 @@ namespace API.Controllers
             };
         }
 
+        // =============== ENDPOINTS =================
+
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
@@ -57,12 +61,15 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
+                await SetRefreshToken(user);
+
                 return CreateUserDto(user);
             }
 
             return Unauthorized();
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
@@ -89,6 +96,8 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
+                await SetRefreshToken(user);
+
                 return CreateUserDto(user);
             }
 
@@ -101,9 +110,12 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
 
+            await SetRefreshToken(user);
+
             return CreateUserDto(user);
         }
 
+        [AllowAnonymous]
         [HttpPost("fbLogin")]
         public async Task<ActionResult<UserDto>> FacebookLogin(string accessToken)
         {
@@ -151,9 +163,34 @@ namespace API.Controllers
 
             if (!result.Succeeded) return BadRequest("Problem creating user using facebook account");
 
+            await SetRefreshToken(user);
+
             return CreateUserDto(user);
         }
 
+        // Get new jwt token
+        [Authorize]
+        [HttpPost("refreshToken")]
+        public async Task<ActionResult<UserDto>> RefreshToken()
+        {
+            // You must authenticated && have valid refreshToken
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            var user = await _userManager.Users
+                            .Include(u => u.RefreshTokens)
+                            .Include(u => u.Photos)
+                            .FirstOrDefaultAsync(u => u.UserName == User.FindFirstValue(ClaimTypes.Name));
+
+            var oldToken = user.RefreshTokens
+                            .FirstOrDefault(rt => rt.Token == refreshToken && rt.IsActive);
+
+            if (oldToken == null) return Unauthorized();
+
+            // refreshToken is valid, now generate new jwt token
+            return CreateUserDto(user);
+        }
+
+        // ================ HELPERS =================
         private UserDto CreateUserDto(AppUser user)
         {
             return new UserDto
@@ -163,6 +200,25 @@ namespace API.Controllers
                 Token = _tokenService.CreateToken(user),
                 Username = user.UserName
             };
+        }
+
+        // Generate new refreshToken (when login, fbLogin, register, getUser)
+        private async Task SetRefreshToken(AppUser user)
+        {
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
+
+            var cookieOptions = new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(7),
+                SameSite = SameSiteMode.None,
+                HttpOnly = true,
+                Secure = true
+            };
+
+            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
         }
     }
 }
